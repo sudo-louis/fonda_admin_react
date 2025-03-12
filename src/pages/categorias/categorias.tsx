@@ -29,14 +29,15 @@ import NavbarSidebarLayout from "../../layouts/navbar-sidebar";
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "../../Redux/hook";
 import { RootState } from "../../Redux/store";
-import {
-  productListAction,
-  addProductAction,
-  updateProductAction,
-  updateProductStatusAction,
-} from "../../Redux/Actions/Product";
 
-import { Product } from "../../Redux/types";
+import {
+  categorieListAction,
+  addCategorieAction,
+  updateCategorieAction,
+  deleteCategorieAction
+} from "../../Redux/Actions/Categorias";
+
+import { Categorie } from "../../Redux/types";
 
 import { useDispatch, useSelector } from "react-redux";
 
@@ -44,10 +45,12 @@ import { useDispatch, useSelector } from "react-redux";
 const CategoriasPage: FC = function () {
   
   const dispatch = useAppDispatch();
-  const { products } = useSelector((state: RootState) => state.productListReducer);
+  // const { products } = useSelector((state: RootState) => state.productListReducer);
+  
+  const { categories } = useSelector((state: RootState) => state.categorieListReducer);
 
   useEffect(() => {
-    dispatch(productListAction());
+    dispatch(categorieListAction());
   }, [dispatch]);
 
   return (
@@ -71,7 +74,8 @@ const CategoriasPage: FC = function () {
           <div className="block items-center sm:flex">
              
             <div className="flex w-full items-center sm:justify-end">
-              <AddProductModal />
+              {/* <AddProductModal /> */}
+              <AddCategorieModal />
             </div>
           </div>
         </div>
@@ -80,7 +84,7 @@ const CategoriasPage: FC = function () {
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full align-middle">
             <div className="overflow-hidden shadow">
-              <ProductsTable products={products}/>          
+              <CategoriesTable categories={categories}/>          
             </div>
           </div>
         </div>
@@ -94,22 +98,18 @@ const CategoriasPage: FC = function () {
 export default CategoriasPage;
 
 
-   
-  const enumSizes = [24,24.5,25,25.5,26,26.5,27,27.5,28,28.5,29,29.5];
-  const enumBrand = ["Adidas","Nike","Puma","Reebok","Charly","Vans","Panam","Otras"];
   
- 
-  const AddProductModal = () => {
+  const AddCategorieModal = () => {
     const [isOpen, setOpen] = useState(false);
-    const [productData, setProductData] = useState<Partial<Product>>({
+    const [categorieData, setcategorieData] = useState<Partial<Categorie>>({
       name: "",
     });
   
     const dispatch = useAppDispatch();
   
     // Agregar producto
-    const handleAddProduct = () => {
-      dispatch(addProductAction(productData));
+    const handleAddCategorie = () => {
+      dispatch(addCategorieAction(categorieData));
       setOpen(false);
     };
   
@@ -135,9 +135,9 @@ export default CategoriasPage;
                   <Label htmlFor="productName">Nombre</Label>
                   <TextInput
                     placeholder="Nombre"
-                    value={productData.name || ""}
+                    value={categorieData.name || ""}
                     onChange={(e) =>
-                      setProductData({ ...productData, name: e.target.value })
+                      setcategorieData({ ...categorieData, name: e.target.value })
                     }
                   />
                 </div>
@@ -146,7 +146,7 @@ export default CategoriasPage;
             </form>
           </Modal.Body>
           <Modal.Footer>
-            <Button color="primary" onClick={handleAddProduct}>
+            <Button color="primary" onClick={handleAddCategorie}>
               Añadir Categoria
             </Button>
           </Modal.Footer>
@@ -155,18 +155,19 @@ export default CategoriasPage;
     );
   };
   
-  
-  interface DeleteProductModalProps {
-    product: Product;
+   interface DeleteCategorieModalProps {
+    categorie: Categorie;
   }
   
-  const DeleteProductModal: FC<DeleteProductModalProps> = ({ product }) => {
+  const DeleteCategorieModal: FC<DeleteCategorieModalProps> = ({ categorie }) => {
     const [isOpen, setOpen] = useState(false);
     const dispatch = useAppDispatch();
-  
+
     const handleDelete = async () => {
-      if (product._id) {
-        await dispatch(updateProductStatusAction({ ...product, status_Active: false }));
+      if (categorie._id) {
+        // await dispatch(deleteCategorieAction({categorieData}));
+        await dispatch(deleteCategorieAction(categorie._id));
+
         setOpen(false); // Cerrar el modal después de la acción
         window.location.reload()
       }
@@ -182,13 +183,13 @@ export default CategoriasPage;
         {/* Modal de confirmación */}
         <Modal onClose={() => setOpen(false)} show={isOpen} size="md">
           <Modal.Header className="px-3 pt-3 pb-0">
-            <span className="sr-only">Eliminar producto</span>
+            <span className="sr-only">Eliminar categoria</span>
           </Modal.Header>
           <Modal.Body className="px-6 pb-6 pt-0">
             <div className="flex flex-col items-center gap-y-6 text-center">
               <HiOutlineExclamationCircle className="text-7xl text-red-600" />
               <p className="text-lg text-gray-500 dark:text-gray-300">
-                ¿Seguro que quieres dar de baja el producto?
+                ¿Seguro que quieres dar de baja la categoria?
               </p>
               <div className="flex items-center gap-x-3">
                 <Button color="failure" onClick={handleDelete}>
@@ -204,63 +205,27 @@ export default CategoriasPage;
       </>
     );
   };
-  
-  interface EditProductModalProps {
-    product: Product | null;
+
+  interface EditCategorietModalProps {
+    categorie: Categorie | null;
     isOpen: boolean;
     setOpen: (open: boolean) => void;
   }
   
-  
-  const EditProductModal: FC<EditProductModalProps> = ({ product, isOpen, setOpen }) => {
-    const [productData, setProductData] = useState<Partial<Product>>(product || {});
+  const EditCategorieModal: FC<EditCategorietModalProps> = ({ categorie, isOpen, setOpen }) => {
+    const [categorieData, setCategorieData] = useState<Partial<Categorie>>(categorie || {});
     const dispatch = useAppDispatch();
   
     useEffect(() => {
-      if (product) {
-        setProductData(product);  
+      if (categorie) {
+        setCategorieData(categorie);  
       }
-    }, [product]);
-
-
-    useEffect(() => {
-      if (productData.sizes) {
-        const totalQuantity = productData.sizes.reduce((total, item) => total + item.quantity, 0);
-        setProductData((prev) => ({ ...prev, countInStock: totalQuantity }));
-      }
-    }, [productData.sizes]);
-
-  
-    
-    const handleSizeChange = (size: number, quantity: number) => {
-      const updatedSizes = [...(productData.sizes || [])];
-      const existingSizeIndex = updatedSizes.findIndex((item) => item.size === size);
-    
-      if (existingSizeIndex !== -1 && updatedSizes[existingSizeIndex]) {
-        if (quantity > 0) {
-          // Actualizar cantidad existente
-          updatedSizes[existingSizeIndex].quantity = quantity;
-        } else {
-          // Eliminar talla si cantidad es 0
-          updatedSizes.splice(existingSizeIndex, 1);
-        }
-      } else if (quantity > 0) {
-        // Agregar nueva talla
-        updatedSizes.push({ size, quantity });
-      }
-    
-      // Calcular la suma total de cantidades
-      const totalQuantity = updatedSizes.reduce((total, item) => total + item.quantity, 0);
-    
-      // Actualizar el estado del producto con las tallas y el conteo total
-      setProductData({ ...productData});
-    };
-    
+    }, [categorie]);
 
     const handleUpdateProduct = async () => {
-      if (productData._id) {
-        await dispatch(updateProductAction(productData)); // Actualizar el producto en la base de datos
-        await dispatch(productListAction()); // Refrescar la lista de productos
+      if (categorieData._id) {
+        await dispatch(updateCategorieAction(categorieData)); // Actualizar el producto en la base de datos
+        await dispatch(categorieListAction()); // Refrescar la lista 
         setOpen(false);
       }
     };
@@ -276,8 +241,8 @@ export default CategoriasPage;
               <div>
                 <Label>Nombre</Label>
                 <TextInput
-                  value={productData.name || ""}
-                  onChange={(e) => setProductData({ ...productData, name: e.target.value })}
+                  value={categorieData.name || ""}
+                  onChange={(e) => setCategorieData({ ...categorieData, name: e.target.value })}
                 />
               </div>
 
@@ -293,14 +258,14 @@ export default CategoriasPage;
     );
   };
   
-  
-  const ProductsTable = ({ products }: { products: Product[] }) => {
+  const CategoriesTable = ({ categories }: { categories: Categorie[] }) => {
     
-    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [selectedCategorie, setSelectedCategorie] = useState<Categorie | null>(null);
+    
     const [isEditOpen, setEditOpen] = useState(false);
   
-    const handleEditClick = (product: Product) => {
-      setSelectedProduct(product);
+    const handleEditClick = (categorie: Categorie) => {
+      setSelectedCategorie(categorie);
       setEditOpen(true);
     };  
     
@@ -313,16 +278,16 @@ export default CategoriasPage;
           <Table.HeadCell>Acciones</Table.HeadCell>
         </Table.Head>
         <Table.Body className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
-          {products.map((product: Product) => (
-            <Table.Row key={product._id} className="hover:bg-gray-100 dark:hover:bg-gray-700">
+          {categories.map((categorie: Categorie) => (
+            <Table.Row key={categorie._id} className="hover:bg-gray-100 dark:hover:bg-gray-700">
 
-              <Table.Cell className={product.status_Active  ? "whitespace-normal break-words p-4 text-base font-medium text-gray-900 dark:text-white": "text-gray-500 line-through"}>
-                {product._id}
+              <Table.Cell className="text-base font-semibold text-gray-900 dark:text-white">
+                {categorie._id}
               </Table.Cell>
  
                <Table.Cell >
-                <div className={product.status_Active  ? "text-base font-semibold text-gray-900 dark:text-white": "text-gray-500 line-through"}  >
-                  {product.name}
+                <div className="text-base font-semibold text-gray-900 dark:text-white">
+                  {categorie.name}
                 </div>
               </Table.Cell>
  
@@ -330,10 +295,10 @@ export default CategoriasPage;
               <Table.Cell className="whitespace-normal break-words p-4">
                 {/* Alineación horizontal de los botones */}
                 <div className="flex items-center space-x-2">
-                  <Button color="primary" onClick={() => handleEditClick(product)}>
+                  <Button color="primary" onClick={() => handleEditClick(categorie)}>
                     <FaEdit className="text-sm" />
                   </Button>
-                  <DeleteProductModal product={product} />
+                  <DeleteCategorieModal categorie={categorie} />
                 </div>
               </Table.Cell>
             </Table.Row>
@@ -341,7 +306,7 @@ export default CategoriasPage;
 
           {/* Modal de edición */}
           <div className="flex items-center gap-x-3">
-            <EditProductModal product={selectedProduct} isOpen={isEditOpen} setOpen={setEditOpen} />
+            <EditCategorieModal categorie={selectedCategorie} isOpen={isEditOpen} setOpen={setEditOpen} />
           </div>
         </Table.Body>
       </Table>

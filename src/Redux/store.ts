@@ -1,7 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
+
 import {productListReducer} from './Reducers/Product';
 import {orderListReducer} from './Reducers/Order';
 import { authReducer } from "./Reducers/User";
+
+import { categorieListReducer } from "./Reducers/Categorias";
  
 
 const store = configureStore({
@@ -9,7 +12,7 @@ const store = configureStore({
     auth: authReducer,
     productListReducer: productListReducer,
     orderListReducer: orderListReducer,
- 
+    categorieListReducer: categorieListReducer
   },
 });
 

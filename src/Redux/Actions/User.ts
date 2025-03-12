@@ -20,6 +20,7 @@ export const loginAction = (email: string, password: string) => async (dispatch:
     // Guarda la información del usuario en localStorage
     localStorage.setItem("userInfo", JSON.stringify(response.data));
 
+    
     // Redirige manualmente al dashboard
     window.location.href = "/dashboard"; 
   } catch (error: any) {

@@ -3,6 +3,11 @@ type Size = {
   quantity: number;
 };
 
+export type Categorie ={
+  _id: string; 
+  name: string;  
+};
+
 export type Product = {
     _id: string; 
     name: string;
