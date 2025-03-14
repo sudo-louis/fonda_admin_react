@@ -10,6 +10,7 @@ import { Categorie } from "../types";
 // Definir el estado inicial con el tipo Categorie[]
 type CategorieState = {
   categories: Categorie[];
+
 };
 
 const initialState: CategorieState = {

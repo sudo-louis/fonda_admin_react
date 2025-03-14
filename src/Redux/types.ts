@@ -8,6 +8,13 @@ export type Categorie ={
   name: string;  
 };
 
+export type Provider ={
+  _id: string; 
+  name: string;  
+  contact: string;  
+  image: string;    
+};
+
 export type Product = {
     _id: string; 
     name: string;

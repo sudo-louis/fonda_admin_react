@@ -6,7 +6,6 @@ import {
 } from "../Actions/Product";
 import { Product } from "../types";
 
-// Definir el estado inicial con el tipo Product[]
 type ProductState = {
   products: Product[];
 };
@@ -15,7 +14,6 @@ const initialState: ProductState = {
   products: [],
 };
 
-// Reducer actualizado
 export const productListReducer = (state = initialState, action: any) => {
   switch (action.type) {
     case FETCH_PRODUCTS:
@@ -28,7 +26,7 @@ export const productListReducer = (state = initialState, action: any) => {
       return {
         ...state,
         products: state.products.map((product) =>
-          product._id === action.payload.id ? action.payload : product
+          product._id === action.payload._id ? action.payload : product
         ),
       };
 

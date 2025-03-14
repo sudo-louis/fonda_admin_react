@@ -11,6 +11,7 @@ import {
   HiSearch,
   HiShoppingBag,
   HiUsers,
+  HiInbox
 } from "react-icons/hi";
 import { CiLogout } from "react-icons/ci";
 import { FaWarehouse, FaTag } from "react-icons/fa";
@@ -76,7 +77,7 @@ const ExampleSidebar: FC = function () {
               </Sidebar.Item>
               <Sidebar.Item
                 href="/proveedores"
-                icon={FaWarehouse}
+                icon={HiInbox}
                 className={
                   "/e-commerce/products" === currentPage
                     ? "bg-gray-100 dark:bg-gray-700"
