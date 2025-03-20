@@ -12,32 +12,41 @@ export const productListAction = () => async (dispatch: Dispatch) => {
   dispatch({ type: FETCH_PRODUCTS, payload: response.data });
 };
 
-// Agregar producto
+
+
 export const addProductAction = (product: any) => async (dispatch: Dispatch) => {
   const formData = new FormData();
+  
   formData.append("name", product.name);
-  formData.append("price", product.price);
-  formData.append("category", product.category);
-  formData.append("provider", product.provider);
+  formData.append("price", String(product.price)); // Asegurar que sea un número convertido a string
+  formData.append("category", product.category); // Debe ser un ObjectId válido
+  formData.append("provider", product.provider); // Debe ser un ObjectId válido
   if (product.image) {
     formData.append("image", product.image);
   }
 
-  const response = await api.post("/api/products", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  try {
+    const response = await api.post("/api/products", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
 
-  dispatch({ type: ADD_PRODUCT, payload: response.data });
+    dispatch({ type: ADD_PRODUCT, payload: response.data });
+    window.location.href = "/productos"; 
+
+  } catch (error: any) {
+    console.error("Error al agregar producto:", error.response?.data || error.message);
+  }
 };
+
 
 // Actualizar producto
 export const updateProductAction = (product: any) => async (dispatch: Dispatch) => {
   const formData = new FormData();
   formData.append("name", product.name);
-  formData.append("price", product.price);
-  formData.append("category", product.category);
-  formData.append("provider", product.provider);
-  if (product.image) {
+  formData.append("price", product.price.toString());
+
+  // Solo agregar la imagen si el usuario selecciona una nueva
+  if (product.image instanceof File) {
     formData.append("image", product.image);
   }
 
@@ -45,8 +54,9 @@ export const updateProductAction = (product: any) => async (dispatch: Dispatch) 
     headers: { "Content-Type": "multipart/form-data" },
   });
 
-  dispatch({ type: UPDATE_PRODUCT, payload: response.data });
+  dispatch({ type: UPDATE_PRODUCT, payload: response.data.product });
 };
+
 
 // Eliminar producto
 export const deleteProductAction = (id: string) => async (dispatch: Dispatch) => {

@@ -14,22 +14,14 @@ export type Provider ={
   contact: string;  
   image: string;    
 };
-
+ 
 export type Product = {
-    _id: string; 
-    name: string;
-    image: string;
-    // sizes: number[]; anterior
-    sizes: Size[];
-    brand: string;
-    description: string;
-    price: number;
-    countInStock: number;
-    status_Active: boolean;
-    rating: number;
-    numReview: number;
-  };
-
+  _id: string;
+  name: string; 
+  price: number;
+  category: string;
+  provider: string;
+};
   
 
   export type OrderItem = {

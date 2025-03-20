@@ -80,67 +80,7 @@ const ProveedoresPage: FC = function () {
 
 export default ProveedoresPage;
 
-// const AddProviderModal = () => {
-//   const [isOpen, setOpen] = useState(false);
-//   const [providerData, setProviderData] = useState<Partial<Provider>>({
-//     name: "",
-//     contact: "",
-//   });
-
-//   const dispatch = useAppDispatch();
-
-//   // Agregar proveedor
-//   const handleAddProvider = () => {
-//     dispatch(addProviderAction(providerData));
-//     setOpen(false);
-//   };
-
-//   return (
-//     <>
-//       <Button color="primary" onClick={() => setOpen(!isOpen)}>
-//         <FaPlus className="mr-3 text-sm" />
-//         Añadir Proveedor
-//       </Button>
-//       <Modal onClose={() => setOpen(false)} show={isOpen} className="overflow-auto">
-//         <Modal.Header className="border-b border-gray-200 dark:border-gray-700">
-//           <strong>Agregar Proveedor</strong>
-//         </Modal.Header>
-//         <Modal.Body>
-//           <form>
-//             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-//               <div>
-//                 <Label htmlFor="providerName">Nombre</Label>
-//                 <TextInput
-//                   placeholder="Nombre"
-//                   value={providerData.name || ""}
-//                   onChange={(e) =>
-//                     setProviderData({ ...providerData, name: e.target.value })
-//                   }
-//                 />
-//               </div>
-//               <div>
-//                 <Label htmlFor="providerContact">Contacto</Label>
-//                 <TextInput
-//                   placeholder="Contacto"
-//                   value={providerData.contact || ""}
-//                   onChange={(e) =>
-//                     setProviderData({ ...providerData, contact: e.target.value })
-//                   }
-//                 />
-//               </div>
-//             </div>
-//           </form>
-//         </Modal.Body>
-//         <Modal.Footer>
-//           <Button color="primary" onClick={handleAddProvider}>
-//             Añadir Proveedor
-//           </Button>
-//         </Modal.Footer>
-//       </Modal>
-//     </>
-//   );
-// };
-
+ 
 const AddProviderModal = () => {
   const [isOpen, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -273,6 +213,7 @@ interface EditProviderModalProps {
 
 const EditProviderModal: FC<EditProviderModalProps> = ({ provider, isOpen, setOpen }) => {
   const [providerData, setProviderData] = useState<Partial<Provider>>(provider || {});
+  const [image, setImage] = useState<File | null>(null);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -281,9 +222,41 @@ const EditProviderModal: FC<EditProviderModalProps> = ({ provider, isOpen, setOp
     }
   }, [provider]);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setImage(e.target.files[0]); // Guarda la imagen en el estado
+    }
+  };
+  
+  // const handleUpdateProvider = async () => {
+  //   if (providerData._id) {
+      
+  //     if (image) {
+  //       providerData.image;
+  //     }
+  //     await dispatch(updateProviderAction(providerData));
+  //     await dispatch(providerListAction());
+  //     setOpen(false);
+
+      
+  //   }
+  // };
+
   const handleUpdateProvider = async () => {
     if (providerData._id) {
-      await dispatch(updateProviderAction(providerData));
+      const formData = new FormData();
+      
+      // Agregar los campos del proveedor al FormData
+      formData.append('name', providerData.name || '');
+      formData.append('contact', providerData.contact || '');
+      
+      // Si hay una nueva imagen, agregarla al FormData
+      if (image) {
+        formData.append('image', image);
+      }
+  
+      // Enviar el FormData al backend
+      await dispatch(updateProviderAction({ _id: providerData._id, formData }));
       await dispatch(providerListAction());
       setOpen(false);
     }
@@ -310,6 +283,14 @@ const EditProviderModal: FC<EditProviderModalProps> = ({ provider, isOpen, setOp
                 value={providerData.contact || ""}
                 onChange={(e) => setProviderData({ ...providerData, contact: e.target.value })}
               />
+            </div>
+            <div>
+                <Label htmlFor="providerImage">Imagen</Label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  />
             </div>
           </div>
         </form>

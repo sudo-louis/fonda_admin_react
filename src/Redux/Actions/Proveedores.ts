@@ -13,13 +13,6 @@ export const providerListAction = () => async (dispatch: Dispatch) => {
   dispatch({ type: FETCH_PROVIDERS, payload: response.data });
 };
 
-// POST
-// export const addProviderAction = (provider: any) => async (dispatch: Dispatch) => {
-//     const response = await api.post("/api/providers", provider);
-//     dispatch({ type: ADD_PROVIDERS, payload: response.data });
-//     window.location.href = "/proveedores"; 
-// };
-
 export const addProviderAction = (formData: FormData) => async (dispatch: Dispatch) => {
     try {
       const response = await api.post("/api/providers", formData, {
@@ -35,10 +28,20 @@ export const addProviderAction = (formData: FormData) => async (dispatch: Dispat
 
 
 // PUT
+// export const updateProviderAction = (provider: any) => async (dispatch: Dispatch) => {
+//     const response = await api.put(`/api/providers/${provider._id}`, provider);
+//     dispatch({ type: UPDATE_PROVIDERS, payload: response.data });
+//     window.location.href = "/proveedores"; 
+// };
+ 
 export const updateProviderAction = (provider: any) => async (dispatch: Dispatch) => {
-    const response = await api.put(`/api/providers/${provider._id}`, provider);
-    dispatch({ type: UPDATE_PROVIDERS, payload: response.data });
-    window.location.href = "/proveedores"; 
+  const response = await api.put(`/api/providers/${provider._id}`, provider.formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+  dispatch({ type: UPDATE_PROVIDERS, payload: response.data });
+  window.location.href = "/proveedores"; 
 };
 
 // DELETE
